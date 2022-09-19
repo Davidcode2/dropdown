@@ -1,0 +1,30 @@
+main {
+  background-color: sienna;
+  margin: 70px;
+}
+
+h1 {
+  color: pink;
+}
+
+li {
+  list-style: none;
+  padding: 5px;
+  margin: 0px;
+}
+
+ul {
+  display: flex;
+  flex-flow: column wrap;
+  align-items: end;
+  margin: 0px;
+  padding: 0px;
+}
+
+.dropdown {
+  background-color: silver;
+}
+
+.marked {
+  font-size: 4rem;
+}
