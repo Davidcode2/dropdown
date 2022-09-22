@@ -2,9 +2,8 @@ import css from './css/style.css';
 
 class DropDown {
   makeDropDownButton() {
-    const dropDownButton = document.querySelector('.dropdown');
-    const menu = document.querySelectorAll('.dropdown ~ li');
-    dropDownButton.addEventListener('click', this.toggleMenu.bind(this));
+    const dropDownButtons = document.querySelectorAll('.dropdown');
+    dropDownButtons.forEach((button) => button.addEventListener('click', this.toggleMenu.bind(this)));
   }
 
   getAllSiblings(element) {
@@ -21,12 +20,19 @@ class DropDown {
     event.target.classList.toggle('active');
     const siblings = this.getAllSiblings(event.target);
     if (event.target.classList.contains('active')) {
-      siblings.forEach((elem) => {
-        elem.style.visibility = 'hidden';
-      });
+      for (let i = 1; i <= siblings.length; i++) {
+        setTimeout(() => {
+          siblings[siblings.length - i].style.visibility = 'hidden';
+          siblings[siblings.length - i].style.opacity = '0';
+          siblings[siblings.length - i].style.transition = 'visibility 0.2s linear, opacity 0.2s linear';
+        }, i * 50);
+      }
     } else {
-      siblings.forEach((elem) => {
-        elem.style.visibility = 'visible';
+      siblings.forEach((elem, index) => {
+        setTimeout(() => {
+          elem.style.visibility = 'visible';
+          elem.style.opacity = '1';
+        }, index * 20);
       });
     }
   }
