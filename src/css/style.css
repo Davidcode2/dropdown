@@ -24,6 +24,9 @@ ul {
 .dropdown {
   background-color: silver;
 }
+.dropdown ~ li {
+  visibility: hidden;
+}
 
 .marked {
   font-size: 4rem;
