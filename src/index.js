@@ -4,6 +4,7 @@ class DropDown {
   makeDropDownButton() {
     const dropDownButtons = document.querySelectorAll('.dropdown');
     dropDownButtons.forEach((button) => {
+      //this.getAllSiblings(button).forEach((elem) => elem.classList.add('closed'));
       if (Array.from(button.classList).includes('dropdown-hover')) {
         button.addEventListener('mouseenter', this.toggleMenu.bind(this));
         button.parentNode.addEventListener(
@@ -13,7 +14,6 @@ class DropDown {
       } else {
         button.addEventListener('click', this.toggleMenu.bind(this));
       }
-      console.log(button.classList);
     });
   }
 
@@ -35,13 +35,13 @@ class DropDown {
     const target = this.getEventTarget(event);
     const targetClassList = Array.from(target.classList);
     if (targetClassList.includes('dropdown')) {
-      target.classList.toggle('active');
       const siblings = this.getAllSiblings(target);
       if (target.classList.contains('active')) {
-        this.animationFoldIn(siblings);
+        this.animationFoldIn(siblings, this.rollIn);
       } else {
-        this.animationFoldOut(siblings);
+        this.animationFoldOut(siblings, this.rollOut);
       }
+      target.classList.toggle('active');
     }
   }
 
@@ -49,32 +49,30 @@ class DropDown {
     const target = this.getEventTarget(event);
     target.firstElementChild.classList.remove('active');
     const { children } = target;
-    this.animationFoldOut(children);
+    this.animationFoldOut(children, this.rollOut);
   }
 
-  animationFoldOut(siblings) {
-    for (let i = 1; i <= siblings.length; i++) {
-      setTimeout(() => {
-        if (
-          !Array.from(siblings[siblings.length - i].classList).includes(
-            'dropdown',
-          )
-        ) {
-          siblings[siblings.length - i].style.visibility = 'hidden';
-          siblings[siblings.length - i].style.opacity = '0';
-          siblings[siblings.length - i].style.transition = 'visibility 0.2s linear, opacity 0.2s linear';
-        }
-      }, i * 50);
-    }
+  animationFoldOut(siblings, callback) {
+    Array.from(siblings).forEach((elem, index) => callback(elem, index));
   }
 
-  animationFoldIn(siblings) {
-    siblings.forEach((elem, index) => {
-      setTimeout(() => {
-        elem.style.visibility = 'visible';
-        elem.style.opacity = '1';
-      }, index * 20);
-    });
+  rollIn(elem, i) {
+    setTimeout(() => {
+      if (!Array.from(elem.classList).includes('dropdown')) {
+        elem.classList.remove('expanded');
+      }
+    }, i * 50);
+  }
+
+  animationFoldIn(siblings, callback) {
+    const reversedSiblings = siblings.reverse();
+    reversedSiblings.forEach((elem, index) => callback(elem, index));
+  }
+
+  rollOut(elem, index) {
+    setTimeout(() => {
+      elem.classList.add('expanded');
+    }, index * 20);
   }
 }
 
