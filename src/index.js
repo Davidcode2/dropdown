@@ -1,11 +1,33 @@
 import css from './css/style.css';
 
 class DropDown {
+  FOLD_OUT_ANIMATION_STEP_MILLI_SEC = 0;
+
+  FOLD_IN_ANIMATION_STEP_MILLI_SEC = 0;
+
+  classArguments = [];
+
   makeDropDownButton() {
     const dropDownButtons = document.querySelectorAll('.dropdown');
+    this.getDropDownOptions(dropDownButtons);
+  }
+
+  getDropDownOptions(dropDownButtons) {
     dropDownButtons.forEach((button) => {
+      const targetClassList = Array.from(button.classList);
+      if (targetClassList.includes('dropdown-step')) {
+        this.FOLD_IN_ANIMATION_STEP_MILLI_SEC = 30;
+        this.FOLD_OUT_ANIMATION_STEP_MILLI_SEC = 10;
+        if (targetClassList.includes('fade')) {
+          this.classArguments.push('fade');
+        }
+      }
+      this.classArguments.push('expanded');
       if (Array.from(button.classList).includes('dropdown-hover')) {
-        button.addEventListener('mouseenter', this.toggleMenuOnMouseIn.bind(this));
+        button.addEventListener(
+          'mouseenter',
+          this.toggleMenuOnMouseIn.bind(this),
+        );
         button.parentNode.addEventListener(
           'mouseleave',
           this.toggleMenuOnMouseOut.bind(this),
@@ -32,28 +54,25 @@ class DropDown {
 
   toggleMenu(event) {
     const target = this.getEventTarget(event);
-    const targetClassList = Array.from(target.classList);
-    if (targetClassList.includes('dropdown')) {
-      const siblings = this.getAllSiblings(target);
-      if (target.classList.contains('active')) {
-        this.animationFoldIn(siblings, this.rollIn);
-      } else {
-        this.animationFoldOut(siblings, this.rollOut);
-      }
-      target.classList.toggle('active');
+    const siblings = this.getAllSiblings(target);
+    if (target.classList.contains('active')) {
+      this.animationFoldIn(siblings, this.rollIn.bind(this));
+    } else {
+      this.animationFoldOut(siblings, this.rollOut.bind(this));
     }
+    target.classList.toggle('active');
   }
 
   toggleMenuOnMouseIn(event) {
     const target = this.getEventTarget(event);
     const siblings = this.getAllSiblings(target);
-    this.animationFoldOut(siblings, this.rollOut);
+    this.animationFoldOut(siblings, this.rollOut.bind(this));
   }
 
   toggleMenuOnMouseOut(event) {
     const target = this.getEventTarget(event);
     target.firstElementChild.classList.remove('active');
-    this.animationFoldIn(Array.from(target.children), this.rollIn);
+    this.animationFoldIn(Array.from(target.children), this.rollIn.bind(this));
   }
 
   animationFoldOut(siblings, callback) {
@@ -62,8 +81,8 @@ class DropDown {
 
   rollOut(elem, index) {
     setTimeout(() => {
-      elem.classList.add('expanded');
-    }, index * 20);
+      elem.classList.add(...this.classArguments);
+    }, index * this.FOLD_OUT_ANIMATION_STEP_MILLI_SEC);
   }
 
   animationFoldIn(siblings, callback) {
@@ -76,10 +95,8 @@ class DropDown {
       if (!Array.from(elem.classList).includes('dropdown')) {
         elem.classList.remove('expanded');
       }
-    }, i * 50);
+    }, i * this.FOLD_IN_ANIMATION_STEP_MILLI_SEC);
   }
-
-
 }
 
 const myDropDown = new DropDown();
