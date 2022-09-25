@@ -4,9 +4,8 @@ class DropDown {
   makeDropDownButton() {
     const dropDownButtons = document.querySelectorAll('.dropdown');
     dropDownButtons.forEach((button) => {
-      //this.getAllSiblings(button).forEach((elem) => elem.classList.add('closed'));
       if (Array.from(button.classList).includes('dropdown-hover')) {
-        button.addEventListener('mouseenter', this.toggleMenu.bind(this));
+        button.addEventListener('mouseenter', this.toggleMenuOnMouseIn.bind(this));
         button.parentNode.addEventListener(
           'mouseleave',
           this.toggleMenuOnMouseOut.bind(this),
@@ -45,15 +44,31 @@ class DropDown {
     }
   }
 
+  toggleMenuOnMouseIn(event) {
+    const target = this.getEventTarget(event);
+    const siblings = this.getAllSiblings(target);
+    this.animationFoldOut(siblings, this.rollOut);
+  }
+
   toggleMenuOnMouseOut(event) {
     const target = this.getEventTarget(event);
     target.firstElementChild.classList.remove('active');
-    const { children } = target;
-    this.animationFoldOut(children, this.rollOut);
+    this.animationFoldIn(Array.from(target.children), this.rollIn);
   }
 
   animationFoldOut(siblings, callback) {
     Array.from(siblings).forEach((elem, index) => callback(elem, index));
+  }
+
+  rollOut(elem, index) {
+    setTimeout(() => {
+      elem.classList.add('expanded');
+    }, index * 20);
+  }
+
+  animationFoldIn(siblings, callback) {
+    const reversedSiblings = siblings.reverse();
+    reversedSiblings.forEach((elem, index) => callback(elem, index));
   }
 
   rollIn(elem, i) {
@@ -64,16 +79,7 @@ class DropDown {
     }, i * 50);
   }
 
-  animationFoldIn(siblings, callback) {
-    const reversedSiblings = siblings.reverse();
-    reversedSiblings.forEach((elem, index) => callback(elem, index));
-  }
 
-  rollOut(elem, index) {
-    setTimeout(() => {
-      elem.classList.add('expanded');
-    }, index * 20);
-  }
 }
 
 const myDropDown = new DropDown();
